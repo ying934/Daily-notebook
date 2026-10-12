@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>每日小本本</title>
+<link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#fbf6e9">
+<style>
+:root{--bg:#fbf6e9;--pg:#fffdf6;--ink:#3b3a36;--mute:#8a857a;--line:#e6dfc9;--red:#d9736a;--grn:#6fa37a;--blu:#6b8fc7;--acc:#d9736a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1f1e1b;--pg:#2a2925;--ink:#ece8dc;--mute:#9b9689;--line:#3d3b35}}
+:root[data-theme="dark"]{--bg:#1f1e1b;--pg:#2a2925;--ink:#ece8dc;--mute:#9b9689;--line:#3d3b35}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Noto Serif SC",Georgia,"Songti SC",serif}
+.wrap{max-width:560px;margin:0 auto;padding:14px 14px 40px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.date{font-size:20px;font-weight:700;text-align:center;flex:1}
+.date small{display:block;font-size:12px;color:var(--mute);font-weight:400}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.nav{width:38px;height:38px;border-radius:50%;background:var(--pg);border:1px solid var(--line);font-size:18px}
+.page{background:var(--pg);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:12px;
+background-image:repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px)}
+h2{margin:0 0 6px;font-size:16px;display:flex;align-items:center;gap:6px}
+.sec{background:var(--pg);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:12px;border-left:5px solid var(--c)}
+.item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.item span{flex:1;word-break:break-word}
+.item.done span{text-decoration:line-through;color:var(--mute)}
+.chk{width:22px;height:22px;border-radius:6px;border:2px solid var(--c);flex:none;font-size:14px;line-height:1;color:#fff}
+.done .chk{background:var(--c)}
+.x{color:var(--mute);font-size:18px;padding:0 4px}
+.add{display:flex;gap:8px;margin-top:8px}
+input,textarea{font:inherit;color:inherit;background:transparent;border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.add button{background:var(--c);color:#fff;border-radius:8px;padding:0 14px;flex:none}
+.wx{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.wx button{width:48px;height:48px;border-radius:14px;border:1px solid var(--line);display:grid;place-items:center;transition:transform .15s;opacity:.75}
+.wx button.on{background:#fff3d6;border-color:#ffb83d;transform:scale(1.12) rotate(-4deg);opacity:1}
+.wx button svg{display:block}
+.wx input{width:90px}
+textarea{min-height:110px;resize:vertical;line-height:32px;padding:0 10px;background-image:repeating-linear-gradient(transparent 0 31px,var(--line) 31px 32px);border:0;background-attachment:local}
+.empty{color:var(--mute);font-size:14px;padding:4px 0}
+.st{font-size:12px;color:var(--mute);text-align:center;margin-top:14px}
+.hb{width:100%;margin-top:10px;padding:10px;border-radius:10px;background:var(--pg);border:1px solid var(--line);color:var(--blu);font-weight:700}
+.bar{display:flex;gap:8px;margin-top:10px}.bar .hb{width:auto;flex:1;margin-top:0}.bar input{width:auto;flex:none;background:var(--pg)}
+.ban{display:none;margin-top:10px;padding:8px 12px;border-radius:10px;background:#fff3d6;color:#7a5a12;font-size:14px;align-items:center;justify-content:space-between;gap:8px}
+.ban.show{display:flex}.ban button{color:#b0691f;font-weight:700;white-space:nowrap}
+.cm{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-weight:700}
+.cm .nav{width:32px;height:32px;font-size:16px}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.cg .wd{font-size:12px;color:var(--mute);padding:2px 0}
+.cg button{aspect-ratio:1;border-radius:10px;position:relative;font-size:15px;border:1px solid transparent}
+.cg button.has::after{content:"";position:absolute;left:50%;bottom:4px;width:7px;height:7px;margin-left:-3.5px;border-radius:50%;background:var(--red)}
+.cg button.td{border-color:var(--acc);font-weight:700}
+.cg button.sel{background:var(--line)}
+.dtl{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line);font-size:15px}
+.dtl h3{margin:0 0 6px;font-size:15px}.dtl p{margin:6px 0 2px;color:var(--mute);font-size:13px}.dtl div.l{padding:2px 0;word-break:break-word}.dtl .dy{white-space:pre-wrap;word-break:break-word}
+.dtl .go{margin-top:10px;width:100%;padding:9px;border-radius:10px;background:var(--acc);color:#fff;font-weight:700}
+.hist{display:none;margin-top:12px}
+.hist.show{display:block}
+.hrow{display:block;padding:8px 4px;border-bottom:1px dashed var(--line);width:100%;text-align:left}
+.hrow b{display:block}.hrow small{display:block;color:var(--mute);font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+</style></head><body><div class="wrap">
+<div class="top">
+<button class="nav" id="prev">‹</button>
+<div class="date" id="date"></div>
+<button class="nav" id="next">›</button>
+</div>
+<div class="bar"><button class="hb" id="yb">✏️ 补写昨天</button><input type="date" id="dp" aria-label="选择日期"></div>
+<div class="ban" id="ban"></div>
+<button class="hb" id="hbtn">📖 查看历史记录</button>
+<div class="bar"><button class="hb" id="ex">💾 导出备份</button><button class="hb" id="im">📥 导入备份</button></div><input type="file" id="fi" accept=".json,.txt,application/json" hidden>
+<div class="hist sec" id="hist" style="--c:var(--blu)"><h2>📖 历史日历</h2><div id="cal"></div><div id="dtl"></div></div>
+
+<div class="sec" style="--c:var(--blu)"><h2>☁️ 今日天气</h2>
+<div class="wx" id="wx"></div></div>
+
+<div class="sec" style="--c:var(--red)"><h2>📝 To Do</h2><div id="todo"></div>
+<div class="add"><input id="i-todo" placeholder="要做什么？"><button data-add="todo">＋</button></div></div>
+
+<div class="sec" style="--c:var(--grn)"><h2>🌷 感恩日记</h2><div id="grat"></div>
+<div class="add"><input id="i-grat" placeholder="今天感恩什么？"><button data-add="grat">＋</button></div></div>
+
+<div class="sec" style="--c:#b08a3e"><h2>🚫 Don't</h2><div id="dont"></div>
+<div class="add"><input id="i-dont" placeholder="今天不要做什么？"><button data-add="dont">＋</button></div></div>
+
+<div class="page"><h2>✍️ 今日小记</h2><textarea id="diary" placeholder="写点今天的感想…"></textarea></div>
+<div class="st" id="st"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+
+const K="#5a4a42",PK="#ffa9b8";
+const face=(x,y)=>`<circle cx="${x-4}" cy="${y}" r="1.7" fill="${K}"/><circle cx="${x+4}" cy="${y}" r="1.7" fill="${K}"/><path d="M${x-2} ${y+2.5}q2 2.2 4 0" stroke="${K}" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="${x-7}" cy="${y+2.5}" rx="2.4" ry="1.5" fill="${PK}"/><ellipse cx="${x+7}" cy="${y+2.5}" rx="2.4" ry="1.5" fill="${PK}"/>`;
+const cloud=(f,st,t="")=>{const sh='<circle cx="15" cy="30" r="7"/><circle cx="25" cy="24" r="10"/><circle cx="35" cy="30" r="7"/><rect x="15" y="30" width="20" height="7" rx="3"/>';
+ return `<g ${t}><g fill="${st}" stroke="${st}" stroke-width="3.5" stroke-linejoin="round">${sh}</g><g fill="${f}">${sh}</g></g>`};
+const rays=()=>[...Array(8)].map((_,i)=>`<line x1="24" y1="4" x2="24" y2="8" stroke="#ffb83d" stroke-width="3" stroke-linecap="round" transform="rotate(${i*45} 24 24)"/>`).join("");
+const drop=x=>`<path d="M${x} 38q-3 4-3 6a3 3 0 0 0 6 0q0-2-3-6z" fill="#7cc4f2"/>`;
+const SV={
+"☀️":()=>rays()+`<circle cx="24" cy="24" r="11" fill="#ffd95e" stroke="#ffb83d" stroke-width="2"/>`+face(24,24),
+"⛅":()=>[...Array(8)].map((_,i)=>`<line x1="17" y1="2" x2="17" y2="5.5" stroke="#ffb83d" stroke-width="2.6" stroke-linecap="round" transform="rotate(${i*45} 17 17)"/>`).join("")+`<circle cx="17" cy="17" r="8" fill="#ffd95e" stroke="#ffb83d" stroke-width="2"/>`+cloud("#fff","#b7c8e2",'transform="translate(3 5)"')+face(28,37),
+"☁️":()=>cloud("#fff","#b7c8e2")+face(25,31),
+"🌧️":()=>cloud("#e4ecf8","#9db4d6",'transform="translate(0 -4)"')+face(25,27)+drop(15)+drop(25)+drop(35),
+"⛈️":()=>cloud("#c9cfdc","#8791a8",'transform="translate(0 -4)"')+face(25,27)+'<path d="M26 35l-6 8h5l-2 5 8-9h-5z" fill="#ffd23f" stroke="#e8a900" stroke-width="1" stroke-linejoin="round"/>',
+"❄️":()=>'<circle cx="24" cy="24" r="14" fill="#e6f4ff" stroke="#9fd0f5" stroke-width="2.5"/>'+[0,60,120].map(a=>`<line x1="24" y1="6" x2="24" y2="42" stroke="#bfe0fa" stroke-width="2" stroke-linecap="round" transform="rotate(${a} 24 24)"/>`).join("")+'<circle cx="24" cy="24" r="8.5" fill="#e6f4ff"/>'+face(24,24),
+"🌬️":()=>cloud("#fff","#b7c8e2",'transform="translate(-2 -2)"')+face(23,29)+'<path d="M30 40h9a3 3 0 1 0-3-3M28 45h6a2.5 2.5 0 1 1-2.5 2.5" stroke="#8fb4de" stroke-width="2.2" fill="none" stroke-linecap="round" transform="translate(0 -3)"/>',
+"🌫️":()=>cloud("#eef1f6","#c3cad8",'transform="translate(0 -5)"')+face(25,26)+'<g stroke="#c3cad8" stroke-width="3" stroke-linecap="round"><line x1="10" y1="38" x2="38" y2="38"/><line x1="14" y1="44" x2="42" y2="44"/></g>'
+};
+const ic=(w,n=34)=>SV[w]?`<svg viewBox="0 0 48 48" width="${n}" height="${n}" style="vertical-align:middle">${SV[w]()}</svg>`:w;
+const WX=["☀️","⛅","☁️","🌧️","⛈️","❄️","🌬️","🌫️"];
+const blank=()=>({todo:[],grat:[],dont:[],weather:"",temp:"",diary:""});
+let day=ymd(new Date()),S=blank(),col=null,timer=null,mode="local";
+function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function shift(n){const d=new Date(day+"T12:00:00");d.setDate(d.getDate()+n);return ymd(d)}
+const ls={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+async function init(){
+  render();
+  try{
+    const [db,user]=await Promise.all([claude.use("db"),claude.use("user")]);
+    if(db&&user){const id=await user.id();if(id){col=db.collection("data/users/"+id);mode="cloud"}}
+  }catch(e){}
+  await load();
+}
+async function load(){
+  S=blank();
+  try{
+    if(col){const s=await col.doc("day-"+day).get();if(s.exists)S=Object.assign(blank(),s.data())}
+    else{S=Object.assign(blank(),ls.get("day-"+day)||{})}
+  }catch(e){setSt("读取失败")}
+  if(S.done&&S.done.length){S.done.forEach(t=>S.todo.push({t,d:true}));delete S.done;save()}
+  S.todo=S.todo.map(x=>typeof x==="string"?{t:x,d:false}:x);
+  render();setSt();
+}
+function save(){
+  clearTimeout(timer);setSt("保存中…");
+  timer=setTimeout(async()=>{
+    try{ls.set("day-"+day,S);if(col)await col.doc("day-"+day).set(S);setSt("已保存")}
+    catch(e){setSt("保存失败，请重试")}
+  },500);
+}
+function setSt(t){$("st").textContent=(t?t+" · ":"")+(mode==="cloud"?"☁️ 已同步到你的账号，换手机登录也能看到":"📱 仅保存在这台手机的浏览器里，请定期「导出备份」")}
+
+function list(k){
+  const el=$(k);el.innerHTML="";
+  if(!S[k].length){el.innerHTML='<div class="empty">还没有</div>'}
+  S[k].forEach((it,i)=>{
+    const o=k==="todo"?it:{t:it,d:false};
+    const r=document.createElement("div");r.className="item"+(o.d?" done":"");
+    r.style.setProperty("--c",k==="grat"?"var(--grn)":"var(--red)");
+    if(k==="todo"){const b=document.createElement("button");b.className="chk";b.textContent=o.d?"✓":"";
+      b.onclick=()=>{it.d=!it.d;save();render()};r.appendChild(b)}
+    const s=document.createElement("span");s.textContent=o.t;r.appendChild(s);
+    const x=document.createElement("button");x.className="x";x.textContent="×";
+    x.onclick=()=>{S[k].splice(i,1);save();render()};r.appendChild(x);el.appendChild(r);
+  });
+}
+function render(){
+  const d=new Date(day+"T12:00:00");
+  $("date").innerHTML=(d.getMonth()+1)+"月"+d.getDate()+"日<small>"+d.getFullYear()+" · 周"+"日一二三四五六"[d.getDay()]+(day===ymd(new Date())?" · 今天":"")+"</small>";
+  ["todo","grat","dont"].forEach(list);
+  $("wx").innerHTML="";
+  WX.forEach(w=>{const b=document.createElement("button");b.innerHTML=ic(w);b.setAttribute("aria-label",w);if(S.weather===w)b.className="on";
+    b.onclick=()=>{S.weather=S.weather===w?"":w;save();render()};$("wx").appendChild(b)});
+  const t=document.createElement("input");t.placeholder="温度 °C";t.value=S.temp;t.oninput=()=>{S.temp=t.value;save()};$("wx").appendChild(t);
+  const td=ymd(new Date()),bn=$("ban");$("dp").value=day;
+  bn.className="ban"+(day===td?"":" show");
+  if(day!==td){bn.textContent="";const m=document.createElement("span");m.textContent=(day<td?"✏️ 正在补写 ":"📅 提前规划 ")+(d.getMonth()+1)+"月"+d.getDate()+"日";
+    const g=document.createElement("button");g.textContent="回到今天 ›";g.onclick=()=>{day=td;load()};bn.append(m,g)}
+  if(document.activeElement!==$("diary"))$("diary").value=S.diary;
+}
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>add(b.dataset.add));
+["todo","grat","dont"].forEach(k=>$("i-"+k).addEventListener("keydown",e=>{if(e.key==="Enter")add(k)}));
+function add(k){const i=$("i-"+k),v=i.value.trim();if(!v)return;S[k].push(k==="todo"?{t:v,d:false}:v);i.value="";save();render()}
+$("diary").oninput=e=>{S.diary=e.target.value;save()};
+$("yb").onclick=()=>{const t=new Date();t.setDate(t.getDate()-1);day=ymd(t);load()};
+$("dp").onchange=e=>{if(e.target.value){day=e.target.value;load()}};
+$("prev").onclick=()=>{day=shift(-1);load()};
+$("next").onclick=()=>{day=shift(1);load()};
+let H={},cm="",sel="";
+const has=v=>v&&((v.todo||[]).length||(v.grat||[]).length||(v.dont||[]).length||v.diary||v.weather||v.temp);
+$("hbtn").onclick=async()=>{
+  const h=$("hist");h.classList.toggle("show");if(!h.classList.contains("show"))return;
+  H={};
+  try{
+    if(col){(await col.get()).docs.forEach(x=>{if(x.id.startsWith("day-"))H[x.id.slice(4)]=x.data()})}
+    else{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith("day-"))H[k.slice(4)]=ls.get(k)}}
+  }catch(e){}
+  H[day]=Object.assign({},H[day],S);
+  cm=day.slice(0,7);sel=day;drawCal();
+};
+function E(t,c,x){const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function drawCal(){
+  const [Y,M]=cm.split("-").map(Number),c=$("cal");c.innerHTML="";
+  const hd=E("div","cm"),pv=E("button","nav","‹"),nx=E("button","nav","›");
+  const mv=n=>{const d=new Date(Y,M-1+n,1);cm=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");drawCal()};
+  pv.onclick=()=>mv(-1);nx.onclick=()=>mv(1);hd.append(pv,E("span","",Y+"年"+M+"月"),nx);c.appendChild(hd);
+  const g=E("div","cg");"日一二三四五六".split("").forEach(w=>g.appendChild(E("div","wd",w)));
+  const first=new Date(Y,M-1,1).getDay(),n=new Date(Y,M,0).getDate(),td=ymd(new Date());
+  for(let i=0;i<first;i++)g.appendChild(E("span"));
+  for(let d=1;d<=n;d++){
+    const k=Y+"-"+String(M).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    const b=E("button",(has(H[k])?"has ":"")+(k===td?"td ":"")+(k===sel?"sel":""),d);
+    b.onclick=()=>{sel=k;drawCal()};g.appendChild(b);
+  }
+  c.appendChild(g);
+  const v=H[sel],t=$("dtl");t.innerHTML="";t.className="dtl";
+  const [y,m,dd]=sel.split("-").map(Number),h3=E("h3");
+  if(v&&v.weather)h3.innerHTML=ic(v.weather,26)+" ";
+  h3.append(m+"月"+dd+"日"+(v&&v.temp?" · "+v.temp+"°":""));t.appendChild(h3);
+  if(!has(v))t.appendChild(E("div","empty","这天还没有记录"));
+  else{
+    const T=(v.todo||[]).map(x=>typeof x==="string"?{t:x,d:0}:x);
+    if(T.length){t.appendChild(E("p","","📝 To Do（完成 "+T.filter(x=>x.d).length+"/"+T.length+"）"));T.forEach(x=>t.appendChild(E("div","l",(x.d?"✓ ":"○ ")+x.t)))}
+    if((v.grat||[]).length){t.appendChild(E("p","","🌷 感恩日记"));v.grat.forEach(x=>t.appendChild(E("div","l","· "+x)))}
+    if((v.dont||[]).length){t.appendChild(E("p","","🚫 Don't"));v.dont.forEach(x=>t.appendChild(E("div","l","· "+x)))}
+    if(v.diary){t.appendChild(E("p","","✍️ 今日小记"));t.appendChild(E("div","dy",v.diary))}
+  }
+  const go=E("button","go",sel===td?"✏️ 回到今天":"✏️ 打开这一天（可补写／修改）");
+  go.onclick=()=>{day=sel;$("hist").classList.remove("show");load();scrollTo(0,0)};t.appendChild(go);
+}
+async function loadAll(){
+  const all={};
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith("day-"))all[k.slice(4)]=ls.get(k)}
+  if(col){try{(await col.get()).docs.forEach(x=>{if(x.id.startsWith("day-"))all[x.id.slice(4)]=x.data()})}catch(e){}}
+  return all;
+}
+$("ex").onclick=async()=>{
+  const all=await loadAll();all[day]=Object.assign({},all[day],S);
+  const txt=JSON.stringify({app:"daily-notebook",exported:ymd(new Date()),days:all},null,1),name="daily-notebook-"+ymd(new Date());
+  try{const dl=await claude.use("downloads");if(dl){try{await dl.save({filename:name+".json",data:txt})}catch(e){await dl.save({filename:name+".txt",data:txt})}setSt("已导出");return}}catch(e){}
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download=name+".json";document.body.appendChild(a);a.click();a.remove();setSt("已导出");
+};
+$("im").onclick=()=>$("fi").click();
+$("fi").onchange=async e=>{
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const days=JSON.parse(await f.text()).days||{},cur=await loadAll();let n=0,k=0;
+    for(const d of Object.keys(days)){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d))continue;
+      if(has(cur[d])){k++;continue}
+      const v=Object.assign(blank(),days[d]);
+      if(col)await col.doc("day-"+d).set(v);else ls.set("day-"+d,v);n++;
+    }
+    setSt("导入 "+n+" 天"+(k?"，跳过 "+k+" 天（已有记录）":""));await load();
+  }catch(err){setSt("导入失败：文件格式不对")}
+  e.target.value="";
+};
+if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+init();
+</script></body></html>
